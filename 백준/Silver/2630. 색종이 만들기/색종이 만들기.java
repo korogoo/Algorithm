@@ -1,55 +1,71 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-public class Main {
-
-    static int[][] map;
-    static int cutCnt = 0;
-    static int blueCnt = 0;
-
+class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int n = Integer.parseInt(br.readLine());
-        map = new int[n][n];
+        int[][] board = new int[n][n];
 
         for (int i = 0; i < n; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine(), " ");
             int j = 0;
             while (st.hasMoreTokens()) {
-                map[i][j++] = Integer.parseInt(st.nextToken());
+                board[i][j++] = Integer.parseInt(st.nextToken());
             }
         }
-
-        doSomething(0, 0, n - 1);
-        int totalBox = cutCnt * 4 - cutCnt + 1;
-        System.out.println(totalBox - blueCnt);
-        System.out.println(blueCnt);
+        System.out.println(solution(board));
     }
 
-    private static void doSomething(int row, int l, int r) {
-        if (l > r) return;
+    private static int[][] BOARD;
 
-        boolean flag = false;
-        int firstData = map[row][l];
-        for (int i = 0; i <= r - l; i++) {
-            if (flag) break;
-            for (int j = l; j <= r; j++) {
-                if (firstData != map[row + i][j]) {
-                    flag = true;
-                    break;
+    private static class Count {
+        private int zero;
+        private int one;
+
+        public Count(int zero, int one) {
+            this.zero = zero;
+            this.one = one;
+        }
+
+        public void add(Count count) {
+            zero += count.zero;
+            one += count.one;
+        }
+    }
+
+    private static String solution(final int[][] board) {
+        BOARD = board;
+        Count count = recursive(board.length, 0, 0);
+        return count.zero + "\n" + count.one;
+    }
+
+    private static boolean isDifferent(final int size, final int i, final int j) {
+        int initial = BOARD[i][j];
+        for (int y = i; y < i + size; y++) {
+            for (int x = j; x < j + size; x++) {
+                if (BOARD[y][x] != initial) {
+                    return true;
                 }
             }
         }
-        if (flag) {
-            cutCnt++;
-            doSomething(row, l, (l + r) / 2);
-            doSomething(row, (l + r) / 2 + 1, r);
-            doSomething(row + (r - l) / 2 + 1, l, (l + r) / 2);
-            doSomething(row + (r - l) / 2 + 1, (l + r) / 2 + 1, r);
-            return;
+        return false;
+    }
+
+    private static Count recursive(final int size, final int i, final int j) {
+        if (!isDifferent(size, i, j)) {
+            if (BOARD[i][j] == 1) {
+                return new Count(0, 1);
+            }
+            return new Count(1, 0);
         }
-        if (firstData == 1) {
-            blueCnt++;
-        }
+
+        int half = size / 2;
+        Count count = new Count(0, 0);
+        count.add(recursive(half, i, j));
+        count.add(recursive(half, i, j + half));
+        count.add(recursive(half, i + half, j));
+        count.add(recursive(half, i + half, j + half));
+        return count;
     }
 }
