@@ -1,37 +1,41 @@
+// dp[i] : "i번째 계단에 도착했을 때 최대 점수?"
+// i-3  ->  i-1  ->  i
+// i-2  ->  i
+
 import java.io.*;
+import java.util.*;
 
-public class Main {
-
-  public static Integer[] dp;
-  public static int[] arr;
-
-  public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    // 한 번에 한 계단씩 또는 두 계단
-    // 연속된 세 개의 계단 x (시작점은 계단에 포함되지 않는다.)
-    // 도착 계단 필수
-
-    int n = Integer.parseInt(br.readLine());
-    arr = new int[n + 1];
-    for (int i = 1; i < arr.length; i++) {
-      arr[i] = Integer.parseInt(br.readLine());
+class Main {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+        int[] stair = new int[n + 1];
+        for (int i = 1; i < stair.length; i++) {
+            stair[i] = Integer.parseInt(br.readLine());
+        }
+        System.out.println(solution(stair));
     }
-
-    dp = new Integer[n + 1];
-    dp[0] = arr[0];
-    dp[1] = arr[1];
-
-    if (n > 1) {
-      dp[2] = arr[1] + arr[2];
+    
+    private static int solution(final int[] stair) {
+        final int stairCount = stair.length - 1;
+        if (stairCount == 1) {
+            return stair[1];
+        }
+        if (stairCount == 2) {
+            return stair[1] + stair[2];
+        }
+        
+        int[] dp = new int[stair.length];
+        dp[0] = 0;
+        dp[1] = stair[1];
+        dp[2] = stair[1] + stair[2];
+        
+        for (int i = 3; i < stair.length; i++) {
+            int a = stair[i - 1] + dp[i - 3];
+            int b = dp[i - 2];
+            
+            dp[i] = stair[i] + Math.max(a, b);
+        }
+        return dp[stairCount];
     }
-
-    System.out.println(recur(n));
-  }
-
-  public static int recur(int idx) {
-    if(dp[idx] == null) {
-      dp[idx] = Math.max(recur(idx - 2), recur(idx - 3) + arr[idx - 1]) + arr[idx];
-    }
-    return dp[idx];
-  }
 }
