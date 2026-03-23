@@ -3,7 +3,6 @@
 0 0 1 1 2 3 2 3 3 2 3
 0 0 2 1 2 3 1 3 2 1 3
 */
-
 import java.util.*;
 import java.io.*;
 
@@ -19,38 +18,31 @@ class Main {
             int min = Integer.MAX_VALUE;
             if (i % 3 == 0 && min > dp[i / 3] + 1) {
                 min = dp[i / 3] + 1;
-                dp[i] = min;
                 op[i] = 1;
             }
             if (i % 2 == 0 && min > dp[i / 2] + 1) {
                 min = dp[i / 2] + 1;
-                dp[i] = min;
                 op[i] = 2;
             }
             if (min > dp[i - 1] + 1) {
                 min = dp[i - 1] + 1;
-                dp[i] = min;
                 op[i] = 3;
             }
+            dp[i] = min;
         }
 
         System.out.println(dp[n]);
         int val = n;
-        while (val >= 1) {
+        while (val > 0) {
             System.out.print(val + " ");
-            if (val == 1) {
-                break;
-            }
             if (op[val] == 1) {
                 val /= 3;
-                continue;
-            }
-            if (op[val] == 2) {
+            } else if (op[val] == 2) {
                 val /= 2;
-                continue;
-            }
-            if (op[val] == 3) {
+            } else if (op[val] == 3) {
                 val -= 1;
+            } else {
+                break;
             }
         }
     }
