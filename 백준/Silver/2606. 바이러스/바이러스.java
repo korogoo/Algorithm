@@ -2,59 +2,45 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
+    static ArrayList<Integer>[] graph;
+    static boolean[] visited;
+    static int count = 0;
 
-  public static class Node {
-    int x;
-    boolean flag;
-    List<Integer> friends;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    public Node(int x) {
-      this.x = x;
-      this.flag = false;
-      this.friends = new ArrayList<>();
-    }
-  }
+        int computerCount = Integer.parseInt(br.readLine());
+        int edgeCount = Integer.parseInt(br.readLine());
 
-  public static Node[] nodes;
+        graph = new ArrayList[computerCount + 1];
+        visited = new boolean[computerCount + 1];
 
-  public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    StringTokenizer st;
-    int n = Integer.parseInt(br.readLine());
-    int m = Integer.parseInt(br.readLine());
+        for (int i = 1; i <= computerCount; i++) {
+            graph[i] = new ArrayList<>();
+        }
 
-    nodes = new Node[n + 1];
-    for (int i = 1; i < n + 1; i++) {
-      nodes[i] = new Node(i);
-    }
+        for (int i = 0; i < edgeCount; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
 
-    while (m > 0) {
-      st = new StringTokenizer(br.readLine());
-      int i = Integer.parseInt(st.nextToken());
-      int j = Integer.parseInt(st.nextToken());
-      nodes[i].friends.add(j);
-      nodes[j].friends.add(i);
-      m--;
+            graph[a].add(b);
+            graph[b].add(a);
+        }
+
+        dfs(1);
+
+        System.out.println(count - 1);
     }
 
-    dfs(1);
-    int cnt = 0;
-    for (int i = 2; i < n + 1; i++) {
-      if (nodes[i].flag) {
-        cnt++;
-      }
-    }
-    System.out.println(cnt);
-  }
+    static void dfs(int now) {
+        visited[now] = true;
+        count++;
 
-  public static void dfs(int x) {
-    nodes[x].flag = true;
-    List<Integer> list = nodes[x].friends;
-    for (int i = 0; i < list.size(); i++) {
-      Node cur = nodes[list.get(i)];
-      if (!cur.flag) {
-        dfs(cur.x);
-      }
+        for (int next : graph[now]) {
+            if (!visited[next]) {
+                dfs(next);
+            }
+        }
     }
-  }
 }
